@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-
+		<!-- comments in english because i want-->
 		<title>Html5 and JQuery</title>
 		
 		<!--JS-->
@@ -117,6 +117,7 @@
 				*/
 				function buildTable(){
 					$('#data-table tbody').empty();
+					//we'll use a variable loaded from a js since I'm not using a server for this file and won't load json due to same origin :3 (I'm lazy like that)
 					$.each(listJson, function(key, value){
 						row += '<tr'+(value['isActive'] == false ? ' class="table-danger"':'')+'>';
 						row += '<th scope="row" data-id="'+value['_id']+'" data-key="'+key+'" class="record-id">'+value['_id']+'</th>';
