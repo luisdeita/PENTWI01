@@ -14,18 +14,25 @@
 		<!--CSS-->
 		<link rel="stylesheet" href="lib/css/bootstrap.min.css"></link>
 		<link rel="stylesheet" href="lib/css/bootstrap-grid.min.css"></link>
+		<style type="text/css">
+			.record-id{
+				text-decoration:underline;
+			}
+			.record-id:hover{
+				cursor: pointer;
+			}
+		</style>
 		
 	</head>
 	<body>
-	<!--list of items
-	--load list from ajax call
-	--load info into details window
-	--mark as sold out
-	-->
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md">
-				This here will serve as our start section
+					<section>
+						<div>
+							<h1>Account List</h1>
+						</div>
+					</section>
 				</div>
 			</div>
 			<div class="row">
@@ -33,9 +40,10 @@
 					<table class="table table-striped table-bordered table-hover" id="data-table">
 						<thead class="thead-dark">
 							<tr>
-								<th scope="col">#</th>
+								<th scope="col"># (Click for details)</th>
 								<th scope="col">Active</th>
-								<th scope="col">Name</th>
+								<th scope="col">First Name</th>
+								<th scope="col">Last Name</th>
 								<th scope="col">Company</th>
 								<th scope="col">E-mail</th>
 								<th scope="col">Balance</th>
@@ -48,30 +56,50 @@
 				<div class="col-md-4">
 					<div class="row">
 						<div class="col-md">
-							<div class="row">
-								<div class="col-md" id="details-id">
-								</div>
+							<div>
+								<h3>Account Details</h3>
 							</div>
-							<div class="row">
-								<div class="col-md" id="details-active">
-								</div>
+							<form id="update-record-form">
+							<div class="alert alert-danger d-none" role="alert" id="submit-error">
 							</div>
-							<div class="row">
-								<div class="col-md" id="details-name">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md" id="details-company">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md" id="details-email">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md" id="details-balance">
-								</div>
-							</div>
+							<ul class="list-group">
+								<input type="hidden" id="selected-key"/>
+								<input type="hidden" id="selected-id"/>
+								<li class="list-group-item" id="details-id">
+									#:
+								</li>
+								<li class="list-group-item" id="details-active">
+									<label>Active: </label>
+									<div id="record-active"></div>
+									<input type="hidden" id="record-is-active" value=""/>
+									<button type="button" class="btn btn-outline-success" id="record-activate">Activate</button>
+									<button type="button" class="btn btn-outline-danger" id="record-deactivate">De-activate</button>
+								</li>
+								<li class="list-group-item">
+									<label>First Name: </label>
+									<input class="form-control" type="text" id="details-first-name" value="" required/>
+								</li>
+								<li class="list-group-item">
+									<label>Last Name: </label>
+									<input class="form-control" type="text" id="details-last-name" value="" required/>
+								</li>
+								<li class="list-group-item">
+									<label>Company: </label>
+									<input class="form-control" type="text" id="details-company" value="" required/>
+								</li>
+								<li class="list-group-item">
+									<label>E-mail: </label>
+									<input class="form-control" type="email" id="details-email" value="" required/>
+								</li>
+								<li class="list-group-item">
+									<label>Balance: </label>
+									<label id="details-balance"></label>
+								</li>
+								<li class="list-group-item">
+									<button type="button" class="btn btn-primary" id="update-record">Update Account Information</button>
+								</li>
+							</ul>
+							</form>
 						</div>
 					</div>
 				</div>
@@ -82,19 +110,25 @@
 			$( document ).ready(function() {
 				var row = '';
 				//build table
-				$.each(listJson, function(key, value){
-					row += '<tr'+(value['isActive'] == false ? ' class="table-danger"':'')+'>';
-					row += '<th scope="row" data-id="'+value['_id']+'" class="record-id">'+value['_id']+'</th>';
-					row += '<th scope="row">'+value['isActive']+'</th>';
-					row += '<th scope="row">'+value['name']['first']+' '+value['name']['last']+'</th>';
-					row += '<th scope="row">'+value['company']+'</th>';
-					row += '<th scope="row">'+value['email']+'</th>';
-					row += '<th scope="row">'+value['balance']+'</th>';
-					row += '<\/tr';
-					$('#data-table tbody').append(row);
-					row = '';
-				});
+				buildTable();
 				
+				function buildTable(){
+					$('#data-table tbody').empty();
+					console.log(listJson[0]);
+					$.each(listJson, function(key, value){
+						row += '<tr'+(value['isActive'] == false ? ' class="table-danger"':'')+'>';
+						row += '<th scope="row" data-id="'+value['_id']+'" data-key="'+key+'" class="record-id">'+value['_id']+'</th>';
+						row += '<th scope="row">'+value['isActive']+'</th>';
+						row += '<th scope="row">'+value['name']['first']+'</th>';
+						row += '<th scope="row">'+value['name']['last']+'</th>';
+						row += '<th scope="row">'+value['company']+'</th>';
+						row += '<th scope="row">'+value['email']+'</th>';
+						row += '<th scope="row">'+value['balance']+'</th>';
+						row += '<\/tr';
+						$('#data-table tbody').append(row);
+						row = '';
+					});
+				}
 				$('.record-id').click(function(){
 					var selected = $(this).attr('data-id');
 					var foundIndex = '';
@@ -105,12 +139,69 @@
 						}
 					});
 					var selectedRecord = listJson[foundIndex];
-					$('#details-id').text(selectedRecord['_id']);
-					$('#details-active').text(selectedRecord['isActive']);
-					$('#details-name').text(selectedRecord['name']['first']+' '+selectedRecord['name']['last']);
-					$('#details-company').text(selectedRecord['company']);
-					$('#details-email').text(selectedRecord['email']);
-					$('#details-balance').text(selectedRecord['balance']);
+					$('#selected-key').val(foundIndex);
+					$('#selected-id').val(selected);
+					$('#details-id').text('#: '+selectedRecord['_id']);
+					$('#record-active').html(selectedRecord['isActive'] == false ? '<span class="badge badge-danger">False</span>':'<span class="badge badge-success">True</span>');
+					if(selectedRecord['isActive'] == false){
+						$('#record-activate').addClass('btn-outline-success').removeClass('btn-success');
+						$('#record-deactivate').removeClass('btn-outline-danger').addClass('btn-danger');
+					}
+					else{
+						$('#record-deactivate').addClass('btn-outline-danger').removeClass('btn-danger');
+						$('#record-activate').removeClass('btn-outline-success').addClass('btn-success');
+					}
+					$('#details-first-name').val(selectedRecord['name']['first']);
+					$('#details-last-name').val(selectedRecord['name']['last']);
+					$('#details-company').val(selectedRecord['company']);
+					$('#details-email').val(selectedRecord['email']);
+					$('#details-balance').html(selectedRecord['balance']);
+				});
+				
+				$('#record-activate').click(function(){
+					$('#record-is-active').val(1);
+					$('#record-deactivate').addClass('btn-outline-danger').removeClass('btn-danger');
+					$('#record-activate').removeClass('btn-outline-success').addClass('btn-success');
+				});
+				
+				$('#record-deactivate').click(function(){
+					$('#record-is-active').val(0);
+					$('#record-activate').addClass('btn-outline-success').removeClass('btn-success');
+					$('#record-deactivate').removeClass('btn-outline-danger').addClass('btn-danger');
+				});
+				
+				$('#update-record').click(function(){
+					if($('#selected-key').val() == ''){
+						$('#submit-error').text('Please select a record before clicking update account information.').removeClass('d-none').fadeOut(8000);
+					}
+					else{
+						if($('#details-first-name').val() == '' || $('#details-last-name').val() == '' || $('#details-company').val() == '' || $('#details-email').val() == ''){
+							$('#submit-error').text('One of the fields is empty.').removeClass('d-none').fadeOut(8000);
+						}
+						else{
+							listJson[$('#selected-key').val()]['name']['first'] = $('#details-first-name').val();
+							listJson[$('#selected-key').val()]['name']['last'] = $('#details-last-name').val();
+							listJson[$('#selected-key').val()]['company'] = $('#details-company').val();
+							listJson[$('#selected-key').val()]['e-mail'] = $('#details-email').val();
+							
+							//update active status
+							if($('#record-is-active').val() != ''){
+								if($('#record-is-active').val() == 1){
+									listJson[$('#selected-key').val()]['isActive'] = true;
+									$('#record-deactivate').addClass('btn-outline-danger').removeClass('btn-danger');
+									$('#record-activate').removeClass('btn-outline-success').addClass('btn-success');
+								}
+								else if($('#record-is-active').val() == 0){
+									listJson[$('#selected-key').val()]['isActive'] = false;
+									$('#record-activate').addClass('btn-outline-success').removeClass('btn-success');
+									$('#record-deactivate').removeClass('btn-outline-danger').addClass('btn-danger');
+								}
+							}
+							
+							//update table
+							buildTable();
+						}
+					}
 				});
 				
 			});
