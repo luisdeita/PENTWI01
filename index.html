@@ -117,7 +117,6 @@
 				*/
 				function buildTable(){
 					$('#data-table tbody').empty();
-					console.log(listJson[0]);
 					$.each(listJson, function(key, value){
 						row += '<tr'+(value['isActive'] == false ? ' class="table-danger"':'')+'>';
 						row += '<th scope="row" data-id="'+value['_id']+'" data-key="'+key+'" class="record-id">'+value['_id']+'</th>';
