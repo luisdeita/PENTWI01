@@ -6,10 +6,9 @@
 		<title>Html5 and JQuery</title>
 		
 		<!--JS-->
-		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="lib/js/jquery-3.2.1.min.js"></script>
+		<script src="lib/js/popper.min.js"></script>
 		<script src="lib/js/bootstrap.min.js"></script>
-		<!--<script src="lib/js/data-list.js"></script>-->
 		
 		<!--CSS-->
 		<link rel="stylesheet" href="lib/css/bootstrap.min.css"></link>
@@ -20,6 +19,12 @@
 			}
 			.record-id:hover{
 				cursor: pointer;
+			}
+			#form-container{
+				display:none;
+			}
+			#details-id{
+				word-wrap: break-word;
 			}
 		</style>
 		
@@ -62,50 +67,52 @@
 				<div class="col-md-3 col-sm-4">
 					<div class="row">
 						<div class="col-md">
-							<div>
-								<h3>Account Details</h3>
+							<div id="form-container">
+								<div>
+									<h3>Account Details</h3>
+								</div>
+								<div class="alert alert-danger d-none" role="alert" id="submit-error">
+								</div>
+								<form id="update-record-form">
+									<ul class="list-group">
+										<input type="hidden" id="selected-key"/>
+										<input type="hidden" id="selected-id"/>
+										<li class="list-group-item" id="details-id">
+											#:
+										</li>
+										<li class="list-group-item" id="details-active">
+											<label>Active: </label>
+											<div id="record-active"></div>
+											<input type="hidden" id="record-is-active" value=""/>
+											<button type="button" class="btn btn-outline-success btn-sm" id="record-activate">Activate</button>
+											<button type="button" class="btn btn-outline-danger btn-sm" id="record-deactivate">De-activate</button>
+										</li>
+										<li class="list-group-item">
+											<label>First Name: </label>
+											<input class="form-control" type="text" id="details-first-name" value="" required/>
+										</li>
+										<li class="list-group-item">
+											<label>Last Name: </label>
+											<input class="form-control" type="text" id="details-last-name" value="" required/>
+										</li>
+										<li class="list-group-item">
+											<label>Company: </label>
+											<input class="form-control" type="text" id="details-company" value="" required/>
+										</li>
+										<li class="list-group-item">
+											<label>E-mail: </label>
+											<input class="form-control" type="email" id="details-email" value="" required/>
+										</li>
+										<li class="list-group-item">
+											<label>Balance: </label>
+											<label id="details-balance"></label>
+										</li>
+										<li class="list-group-item">
+											<button type="button" class="btn btn-primary btn-sm" id="update-record">Update Information</button>
+										</li>
+									</ul>
+								</form>
 							</div>
-							<form id="update-record-form">
-							<div class="alert alert-danger d-none" role="alert" id="submit-error">
-							</div>
-							<ul class="list-group">
-								<input type="hidden" id="selected-key"/>
-								<input type="hidden" id="selected-id"/>
-								<li class="list-group-item" id="details-id">
-									#:
-								</li>
-								<li class="list-group-item" id="details-active">
-									<label>Active: </label>
-									<div id="record-active"></div>
-									<input type="hidden" id="record-is-active" value=""/>
-									<button type="button" class="btn btn-outline-success" id="record-activate">Activate</button>
-									<button type="button" class="btn btn-outline-danger" id="record-deactivate">De-activate</button>
-								</li>
-								<li class="list-group-item">
-									<label>First Name: </label>
-									<input class="form-control" type="text" id="details-first-name" value="" required/>
-								</li>
-								<li class="list-group-item">
-									<label>Last Name: </label>
-									<input class="form-control" type="text" id="details-last-name" value="" required/>
-								</li>
-								<li class="list-group-item">
-									<label>Company: </label>
-									<input class="form-control" type="text" id="details-company" value="" required/>
-								</li>
-								<li class="list-group-item">
-									<label>E-mail: </label>
-									<input class="form-control" type="email" id="details-email" value="" required/>
-								</li>
-								<li class="list-group-item">
-									<label>Balance: </label>
-									<label id="details-balance"></label>
-								</li>
-								<li class="list-group-item">
-									<button type="button" class="btn btn-primary btn-sm" id="update-record">Update Information</button>
-								</li>
-							</ul>
-							</form>
 						</div>
 					</div>
 				</div>
@@ -149,7 +156,7 @@
 				}
 				
 				//load record details into details section
-				$('.record-id').click(function(){
+				$(document).on('click', '#data-table th.record-id',function(){
 					var selected = $(this).attr('data-id');
 					var foundIndex = '';
 					$.each(listJson, function(key, value){
@@ -176,6 +183,7 @@
 					$('#details-company').val(selectedRecord['company']);
 					$('#details-email').val(selectedRecord['email']);
 					$('#details-balance').html(selectedRecord['balance']);
+					$('#form-container').fadeIn();
 				});
 				
 				//change isActive flag to true
@@ -234,6 +242,7 @@
 								}
 							}
 							
+							$('#form-container').fadeOut();
 							//update table with new values set in listJson
 							buildTable();
 						}
