@@ -20,7 +20,7 @@
 			.record-id:hover{
 				cursor: pointer;
 			}
-			#form-container{
+			#submit-success, #form-container{
 				display:none;
 			}
 			#details-id{
@@ -47,6 +47,7 @@
 				<div class="col-md-7 col-sm-8 offset-md-1">
 					<h1 class="display-6">Vehicle List</h1>
 					<div class="table-responsive">
+						<div class="alert alert-success" role="alert" id="submit-success">Record Updated successfully.</div>
 						<table class="table table-striped table-bordered table-hover" id="data-table">
 							<thead class="thead-dark">
 								<tr>
@@ -244,6 +245,7 @@
 							}
 							$('#form-container').fadeOut();
 							//update table with new values set in listJson
+							$('#submit-success').show().fadeOut(6000);
 							buildTable();
 						}
 					}
