@@ -20,7 +20,7 @@
 			.record-id:hover{
 				cursor: pointer;
 			}
-			#submit-success, #form-container{
+			#submit-success, #form-container, #submit-error{
 				display:none;
 			}
 			#details-id{
@@ -72,7 +72,7 @@
 								<div>
 									<h3>Account Details</h3>
 								</div>
-								<div class="alert alert-danger d-none" role="alert" id="submit-error">
+								<div class="alert alert-danger" role="alert" id="submit-error">
 								</div>
 								<form id="update-record-form">
 									<ul class="list-group">
@@ -191,7 +191,7 @@
 				//change isActive flag to true
 				$('#record-activate').click(function(){
 					if($('#selected-key').val() == ''){
-						$('#submit-error').text('Please select a record first.').removeClass('d-none').fadeOut(8000);
+						$('#submit-error').text('Please select a record first.').show().fadeOut(8000);
 					}
 					else{
 						$('#record-is-active').val(1);
@@ -204,7 +204,7 @@
 				//change isActive flag to false
 				$('#record-deactivate').click(function(){
 					if($('#selected-key').val() == ''){
-						$('#submit-error').text('Please select a record first.').removeClass('d-none').fadeOut(8000);
+						$('#submit-error').text('Please select a record first.').show().fadeOut(8000);
 					}
 					else{
 						$('#record-is-active').val(0);
@@ -217,11 +217,11 @@
 				//update record with new information
 				$('#update-record').click(function(){
 					if($('#selected-key').val() == ''){
-						$('#submit-error').text('Please select a record before clicking update account information.').removeClass('d-none').fadeOut(8000);
+						$('#submit-error').text('Please select a record before clicking update account information.').show().fadeOut(8000);
 					}
 					else{
 						if($('#details-first-name').val() == '' || $('#details-last-name').val() == '' || $('#details-company').val() == '' || $('#details-email').val() == ''){
-							$('#submit-error').text('One of the fields is empty.').removeClass('d-none').fadeOut(8000);
+							$('#submit-error').text('One of the fields is empty.').show().fadeOut(8000);
 						}
 						else{
 							listJson[$('#selected-key').val()]['name']['first'] = $('#details-first-name').val();
